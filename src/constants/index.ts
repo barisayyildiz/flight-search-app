@@ -1,5 +1,4 @@
 import { Airport } from "@/types/airport"
-import { Flight } from "@/types/flight";
 
 export const airports: Airport[] = [
   {

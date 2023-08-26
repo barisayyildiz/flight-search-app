@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { selectFligts } from '@/store/flights';
 import { selectSearch } from '@/store/search'
 import { useSelector } from 'react-redux';
-import { getAirportString } from '@/utils';
 import type { FlightListResponseTypeItem } from '@/types/flight';
 import FlightListItem from './FlightListItem';
 import Dropdown from './Dropdown';
@@ -31,7 +30,6 @@ const FlightList = () => {
     return false;
   }, [flights, tab]);
 
-  const sortBy: keyof FlightListResponseTypeItem = 'price';
   const sortedData = useMemo(() => {
     const data = [...(tab === 'outbound' ? flights.outbound : flights.return ? flights.return : [])];
     if(!key) return data;
