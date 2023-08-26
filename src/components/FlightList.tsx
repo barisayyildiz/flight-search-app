@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { selectFligts } from '@/store/flights';
 import { selectSearch } from '@/store/search'
 import { useSelector } from 'react-redux';
@@ -113,6 +113,12 @@ const FlightList = () => {
     return null;
   }
 
+  useEffect(() => {
+    if(!flights.to && tab === 'return') {
+      setTab('going');
+    }
+  }, [flights.to])
+  
   return (
     <div style={{
       display: 'flex',
@@ -138,7 +144,7 @@ const FlightList = () => {
           id="going_flights" 
           name="type" 
           value="going_flights" 
-          defaultChecked 
+          checked={tab === 'going'}
           onChange={() => setTab('going')}
         ></input>
         <label htmlFor='going_flights'>Going Flights</label>
@@ -150,6 +156,7 @@ const FlightList = () => {
                 id="return_flights" 
                 name="type" 
                 value="return_flights" 
+                checked={tab === 'return'}
                 onChange={() => setTab('return')}
               ></input>
               <label htmlFor='return_flights'>Return Flights</label>
