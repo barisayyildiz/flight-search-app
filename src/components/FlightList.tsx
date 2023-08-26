@@ -3,94 +3,16 @@ import { selectFligts } from '@/store/flights';
 import { selectSearch } from '@/store/search'
 import { useSelector } from 'react-redux';
 import { getAirportString } from '@/utils';
+import type { FlightListResponseTypeItem } from '@/types/flight';
+import FlightListItem from './FlightListItem';
+import Dropdown from './Dropdown';
 
 const FlightList = () => {
   const { flights, loading, error } = useSelector(selectFligts);
   const { submitted } = useSelector(selectSearch);
 
-  const [tab, setTab] = useState<'going' | 'return'>(flights.to ? 'going' : 'return')
-
-  const GoingFlights = useCallback(() => (
-    <ul style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '15px',
-      alignItems: 'center'
-    }}>
-      {flights.from.map(flight => (
-        <li key={flight.id} style={{
-          listStyle: 'none',
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '40px',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          padding: '0px 20px',
-          maxWidth: '1000px',
-          cursor: 'pointer'
-        }}>
-          <div>
-            <p><b>{flight.id}</b></p>
-          </div>
-          <div>
-            <p><b>From: </b> {getAirportString(flight.from) }</p>
-            <p><b>To: </b> {getAirportString(flight.to)}</p>
-          </div>
-          <div>
-            <p><b>Departure: </b> {flight.departure as string}</p>
-            <p><b>Arrival: </b> {flight.arrival as string}</p>
-            <p><b>Flight Time: </b> {flight.flightTime}</p>
-          </div>
-          <div>
-            <p><b>Price : </b> {flight.price}$</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-  ), [flights.from]);
-
-  const ReturnFlights = useCallback(() => (
-    <ul style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '15px',
-      alignItems: 'center'
-    }}>
-      {flights.to?.map(flight => (
-        <li key={flight.id} style={{
-          listStyle: 'none',
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '40px',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          padding: '0px 20px',
-          maxWidth: '1000px',
-          cursor: 'pointer'
-        }}>
-          <div>
-            <p><b>{flight.id}</b></p>
-          </div>
-          <div>
-            <p><b>From: </b> {getAirportString(flight.from) }</p>
-            <p><b>To: </b> {getAirportString(flight.to)}</p>
-          </div>
-          <div>
-            <p><b>Departure: </b> {flight.departure as string}</p>
-            <p><b>Arrival: </b> {flight.departure as string}</p>
-            <p><b>Flight Time: </b> {flight.flightTime}</p>
-          </div>
-          <div>
-            <p><b>Price : </b> {flight.price}$</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-  ), [flights.to]);
+  const [tab, setTab] = useState<'outbound' | 'return'>(flights.outbound ? 'outbound' : 'return')
+  const [key, setKey] = useState<keyof FlightListResponseTypeItem | null>(null);
 
   const ErrorField = () => (
     <div style={{
@@ -104,21 +26,23 @@ const FlightList = () => {
   )
 
   const emptyResult = useMemo(() => {
-    if(tab === 'going' && !flights.from.length) return true;
-    if(tab === 'return' && flights.to && !flights.to.length) return true;
+    if(tab === 'outbound' && flights.outbound && !flights.outbound.length) return true;
+    if(tab === 'return' && flights.return && !flights.return.length) return true;
     return false;
   }, [flights, tab]);
 
+  const sortBy: keyof FlightListResponseTypeItem = 'price';
+  const sortedData = useMemo(() => {
+    const data = [...(tab === 'outbound' ? flights.outbound : flights.return ? flights.return : [])];
+    if(!key) return data;
+    console.log(key);
+    return data.sort((a, b) => (a[key] as number) - (b[key] as number));
+  }, [flights, key, tab]);
+ 
   if(!submitted) {
     return null;
   }
 
-  // useEffect(() => {
-  //   if(!flights.to && tab === 'return') {
-  //     setTab('going');
-  //   }
-  // }, [flights.to])
-  
   return (
     <div style={{
       display: 'flex',
@@ -127,29 +51,62 @@ const FlightList = () => {
       alignItems: 'center',
       flexDirection: 'column',
       margin: '40px 0px',
-      fontSize: '1.15rem'
+      marginBottom: '100px',
+      fontSize: '1.15rem',
     }}>
       { loading ? 'Loading...' : 
         error ? <ErrorField /> :
         (emptyResult) ? <p>No results were found</p> : (
           <>
-            <h2>{tab === 'going' ? 'Going Flights' : 'Return Flights'}</h2>
-            {tab === 'going' ? <GoingFlights /> : <ReturnFlights />}
+            <div style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'inherit'
+            }}>
+              <h2>{tab === 'outbound' ? 'Outbound Flights' : 'Return Flights'}</h2>
+              <Dropdown 
+                style={{
+                  width: '300px'
+                }}
+                name={"from"} 
+                value={key as string} 
+                placeholder='Sort flights'
+                onSelected={value => setKey(value as keyof FlightListResponseTypeItem)} 
+                options={[
+                  { label: 'Sort by price', value: 'price' },
+                  { label: 'Sort by flight time', value: 'flightTime' },
+                  { label: 'Sort by departure time', value: 'departure' },
+                  { label: 'Sort by arrival time', value: 'arrival' }
+                ]}
+              ></Dropdown>
+            </div>
+            {
+              <ul style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '15px',
+                alignItems: 'center',
+                width: '100%'
+              }}>
+                {sortedData.map(flight => <FlightListItem flight={flight} key={flight.id} />)}
+              </ul>
+            }
           </>
         )
       }
       <div>
         <input 
           type="radio" 
-          id="going_flights" 
+          id="outbound_flights" 
           name="type" 
-          value="going_flights" 
-          checked={tab === 'going'}
-          onChange={() => setTab('going')}
+          value="outbound_flights" 
+          checked={tab === 'outbound'}
+          onChange={() => setTab('outbound')}
         ></input>
-        <label htmlFor='going_flights'>Going Flights</label>
+        <label htmlFor='outbound_flights'>Outbound Flights</label>
         {
-          flights.to && (
+          flights.return && (
             <>
               <input 
                 type="radio" 
@@ -165,8 +122,7 @@ const FlightList = () => {
         }
         </div>
     </div>
-  )
-  
+  )  
 }
 
 export default FlightList;

@@ -1,12 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { BaseResponseType } from '@/types/api';
 import type { Flight, FlightListResponseType } from '@/types/flight';
-// import { flights } from '@/constants';
-import { getFlightTime } from '@/utils';
-import { format } from 'date-fns';
-import { generateFlights } from '@/constants';
+import { generateFlights } from '@/utils';
 
-const flights: Flight[] = generateFlights(20000);
+const flights: Flight[] = generateFlights(2000);
 
 export default function handler(
   req: NextApiRequest,
@@ -35,45 +32,39 @@ export default function handler(
 
   const returnTrip = parsedArrivalDate;
 
-  console.log('Going Flights');
-  let filteredGoingFlights = flights.filter(
+  let filteredOutboundFlights = flights.filter(
     flight => {
       return flight.from.id === fromWhere &&
       flight.to.id === toWhere &&
-      (flight.departure as Date).toDateString() === parsedDepartureDate.toDateString()
+      new Date(flight.departure).toDateString() === parsedDepartureDate.toDateString()
     }
   );
 
-  console.log('Return Flights');
   let filteredReturnFlights: Flight[] = [];
   if (returnTrip) {
     filteredReturnFlights = flights.filter(
       flight => {
         return flight.from.id === toWhere && // dönüş uçağının kalktığı yer, ilk gittiğimiz yer olmalı
         flight.to.id === fromWhere && // dönüş uçuşunun gideceği yer, başladığımız nokta olmalı
-        (flight.arrival as Date).toDateString() === parsedArrivalDate.toDateString()
+        new Date(flight.departure).toDateString() === parsedArrivalDate.toDateString()
       }
     );
   }
 
-  filteredGoingFlights = filteredGoingFlights.map(flight => ({
+  filteredOutboundFlights = filteredOutboundFlights.map(flight => ({
     ...flight,
-    flightTime: getFlightTime(flight.departure as Date, flight.arrival as Date),
-    departure: format((flight.departure as Date), "yyyy-MM-dd HH:mm"),
-    arrival: format((flight.arrival as Date), "yyyy-MM-dd HH:mm")
+    flightTime: flight.arrival - flight.departure,
   }));
 
   filteredReturnFlights = filteredReturnFlights.map(flight => ({
     ...flight,
-    flightTime: getFlightTime(flight.departure as Date, flight.arrival as Date),
-    departure: format((flight.departure as Date), "yyyy-MM-dd HH:mm"),
-    arrival: format((flight.arrival as Date), "yyyy-MM-dd HH:mm")
+    flightTime: flight.arrival - flight.departure
   }))
 
   return res.status(200).json({
     data: {
-      from: filteredGoingFlights,
-      ...(returnTrip ? { to: filteredReturnFlights } : {})
+      outbound: filteredOutboundFlights,
+      ...(returnTrip ? { return: filteredReturnFlights } : {})
     } as FlightListResponseType,
     isSucceed: true,
     message: null

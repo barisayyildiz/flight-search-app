@@ -4,16 +4,16 @@ export type Flight = {
   id: string,
   from: Airport,
   to: Airport,
-  departure: Date | string,
-  arrival: Date | string,
+  departure: number,
+  arrival: number,
   price: number
 }
 
 export type FlightListResponseTypeItem = (Flight & {
-  flightTime: string
+  flightTime: number
 })
 
 export type FlightListResponseType = {
-  from: FlightListResponseTypeItem[],
-  to?: FlightListResponseTypeItem[]
+  outbound: FlightListResponseTypeItem[],
+  return?: FlightListResponseTypeItem[]
 }

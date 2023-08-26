@@ -156,7 +156,7 @@ export const SearchForm = () => {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            minWidth: '1200px',
+            width: '100%',
             gap: '30px'
           }}
         >

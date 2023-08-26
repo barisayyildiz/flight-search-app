@@ -17,29 +17,37 @@ export const useOutsideClick = (callback: () => void) => {
 };
 
 type useSortProps<T> = {
-  data?: Array<T>,
-  sortBy: keyof T,
-  isAscending?: boolean
+  data: T[];
+  sortBy: keyof T;
+  isAscending?: boolean;
 };
 
-export const useSort = <T>({ data: initialData, sortBy, isAscending = true }: useSortProps<unknown>) => {
-  const [data, setData] = useState<Array<unknown>>(initialData as Array<unknown>);
+export const useSort = <T>({ data: initialData, sortBy, isAscending = true }: useSortProps<T>) => {
+  const [data, setData] = useState<T[]>(initialData);
   const [key, setKey] = useState<keyof T>(sortBy);
-  const [ascending, setAscending] = useState(isAscending);
+  const [ascending, setAscending] = useState<boolean>(isAscending);
 
-  const sortedArray = data.sort((a, b) => {
-    const valueA = (a as any)[key as keyof unknown];
-    const valueB = (b as any)[key as keyof unknown];
-    
+  const sortedArray = [...data].sort((a, b) => {
+    const valueA = a[key];
+    const valueB = b[key];
+
     if (valueA < valueB) return ascending ? -1 : 1;
     if (valueA > valueB) return ascending ? 1 : -1;
     return 0;
   });
-  
+
   const sort = (newKey: keyof T, newAscending: boolean = true) => {
     setKey(newKey);
     setAscending(newAscending);
-  }
+    setData([...data].sort((a, b) => {
+      const valueA = a[newKey];
+      const valueB = b[newKey];
+
+      if (valueA < valueB) return newAscending ? -1 : 1;
+      if (valueA > valueB) return newAscending ? 1 : -1;
+      return 0;
+    }));
+  };
 
   return { sortedArray, sort };
-}
+};

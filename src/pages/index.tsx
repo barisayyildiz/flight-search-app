@@ -4,7 +4,9 @@ import { SearchForm } from "@/components/SearchForm"
 export default function Home() {
   return (
     <div style={{
-      marginTop: '100px'
+      // margin: '100px',
+      margin: '100px auto',
+      maxWidth: '1200px'
     }}>
       <SearchForm />
       <FlightList></FlightList>
