@@ -104,6 +104,48 @@ export const airports: Airport[] = [
   }
 ];
 
+const getRandomDateWithinRange = (startDays: number, endDays: number): Date => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate.getTime() + startDays * 24 * 60 * 60 * 1000);
+  const endDate = new Date(currentDate.getTime() + endDays * 24 * 60 * 60 * 1000);
+  
+  const randomTimestamp = startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime());
+  const randomDate = new Date(randomTimestamp);
+  
+  return randomDate;
+}
+
+export const generateFlights = (n = 1000): Flight[] => {
+  const flights: Flight[] = [];
+  const minAirportId = 1;
+  const maxAirportId = 20;
+  
+  for(let i=0; i<n; i++) {
+    const price = Math.floor(Math.random() * 450) + 50;
+    const from = airports[Math.floor(Math.random() * airports.length)];
+    let to = airports[Math.floor(Math.random() * airports.length)];
+    while(to.id === from.id) {
+      to = airports[Math.floor(Math.random() * airports.length)];
+    }
+
+    const departure = getRandomDateWithinRange(0,3);
+    let arrival = getRandomDateWithinRange(0,6);
+    while (arrival < departure) {
+      arrival = getRandomDateWithinRange(0,6);
+    }
+
+    flights.push({
+      id: i.toString(),
+      from: from,
+      to: to,
+      departure,
+      arrival,
+      price
+    })
+  }
+  return flights;
+}
+
 export const flights: Flight[] = [
   {
     id: "1",

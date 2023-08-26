@@ -4,7 +4,6 @@ import DatePicker from "react-datepicker";
 import axios, { AxiosError } from 'axios';
 import { Airport } from '@/types/airport';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from 'react-redux';
 import { setError, setFlights, setLoading } from '@/store/flights';
 import { getAirportString } from '@/utils';
@@ -121,6 +120,7 @@ export const SearchForm = () => {
     }}>
       <div className='custom-datepicker'>
         <DatePicker 
+          minDate={new Date()}
           name="departure"
           selected={departureDate} 
           onChange={(date: Date) => {

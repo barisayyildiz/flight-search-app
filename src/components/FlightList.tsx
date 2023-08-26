@@ -40,7 +40,7 @@ const FlightList = () => {
           </div>
           <div>
             <p><b>Departure: </b> {flight.departure as string}</p>
-            <p><b>Arrival: </b> {flight.departure as string}</p>
+            <p><b>Arrival: </b> {flight.arrival as string}</p>
             <p><b>Flight Time: </b> {flight.flightTime}</p>
           </div>
           <div>
@@ -113,11 +113,11 @@ const FlightList = () => {
     return null;
   }
 
-  useEffect(() => {
-    if(!flights.to && tab === 'return') {
-      setTab('going');
-    }
-  }, [flights.to])
+  // useEffect(() => {
+  //   if(!flights.to && tab === 'return') {
+  //     setTab('going');
+  //   }
+  // }, [flights.to])
   
   return (
     <div style={{

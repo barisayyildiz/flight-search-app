@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { BaseResponseType } from '@/types/api';
 import type { Flight, FlightListResponseType } from '@/types/flight';
-import { flights } from '@/constants';
+// import { flights } from '@/constants';
 import { getFlightTime } from '@/utils';
 import { format } from 'date-fns';
+import { generateFlights } from '@/constants';
+
+const flights: Flight[] = generateFlights(20000);
 
 export default function handler(
   req: NextApiRequest,
@@ -32,13 +35,9 @@ export default function handler(
 
   const returnTrip = parsedArrivalDate;
 
-  console.log('parsedDepartureDate : ', parsedDepartureDate);
-  console.log('parsedArrivalDate : ', parsedArrivalDate);
-
   console.log('Going Flights');
   let filteredGoingFlights = flights.filter(
     flight => {
-      console.log(flight.from.id, flight.to.id, (flight.departure as Date).toDateString());
       return flight.from.id === fromWhere &&
       flight.to.id === toWhere &&
       (flight.departure as Date).toDateString() === parsedDepartureDate.toDateString()
@@ -50,7 +49,6 @@ export default function handler(
   if (returnTrip) {
     filteredReturnFlights = flights.filter(
       flight => {
-        console.log(flight.from.id, flight.to.id, (flight.arrival as Date).toDateString());
         return flight.from.id === toWhere && // dönüş uçağının kalktığı yer, ilk gittiğimiz yer olmalı
         flight.to.id === fromWhere && // dönüş uçuşunun gideceği yer, başladığımız nokta olmalı
         (flight.arrival as Date).toDateString() === parsedArrivalDate.toDateString()
