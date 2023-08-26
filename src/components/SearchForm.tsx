@@ -5,9 +5,10 @@ import axios, { AxiosError } from 'axios';
 import { Airport } from '@/types/airport';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectFligts, setError, setFlights, setLoading } from '@/store/flights';
+import { useDispatch } from 'react-redux';
+import { setError, setFlights, setLoading } from '@/store/flights';
 import { getAirportString } from '@/utils';
+import { submitForm } from '@/store/search';
 
 export const SearchForm = () => {
   const [airports, setAirports] = useState<DropdownOptionType[]>([]);
@@ -76,6 +77,7 @@ export const SearchForm = () => {
       dispatch(setError(err as string));
     } finally {
       dispatch(setLoading(false));
+      dispatch(submitForm());
     }
   };
 

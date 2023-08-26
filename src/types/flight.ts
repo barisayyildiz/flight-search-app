@@ -9,11 +9,11 @@ export type Flight = {
   price: number
 }
 
+export type FlightListResponseTypeItem = (Flight & {
+  flightTime: string
+})
+
 export type FlightListResponseType = {
-  from: (Flight & {
-    flightTime: string
-  })[],
-  to?: (Flight & {
-    flightTime: string
-  })[]
+  from: FlightListResponseTypeItem[],
+  to?: FlightListResponseTypeItem[]
 }

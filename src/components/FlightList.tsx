@@ -1,10 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { selectFligts } from '@/store/flights';
+import { selectSearch } from '@/store/search'
 import { useSelector } from 'react-redux';
 import { getAirportString } from '@/utils';
 
 const FlightList = () => {
   const { flights, loading, error } = useSelector(selectFligts);
+  const { submitted } = useSelector(selectSearch);
 
   const [tab, setTab] = useState<'going' | 'return'>(flights.to ? 'going' : 'return')
 
@@ -106,7 +108,10 @@ const FlightList = () => {
     if(tab === 'return' && flights.to && !flights.to.length) return true;
     return false;
   }, [flights, tab]);
-  console.log(emptyResult);
+
+  if(!submitted) {
+    return null;
+  }
 
   return (
     <div style={{
@@ -120,7 +125,7 @@ const FlightList = () => {
     }}>
       { loading ? 'Loading...' : 
         error ? <ErrorField /> :
-        emptyResult ? <p>No results were found</p> : (
+        (emptyResult) ? <p>No results were found</p> : (
           <>
             <h2>{tab === 'going' ? 'Going Flights' : 'Return Flights'}</h2>
             {tab === 'going' ? <GoingFlights /> : <ReturnFlights />}
