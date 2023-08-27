@@ -60,12 +60,10 @@ export const SearchForm = () => {
     if(isReturn){
       params += `&arrivalDate=${arrivalDate.getTime()}`
     }
-    console.log(params);
     dispatch(setLoading(true));
     try {
       const { data: { data, isSucceed, message } } = await axios.get(`http://localhost:3000/api/flights?${params}`);
       if (isSucceed) {
-        console.log(data);
         dispatch(setFlights(data));
         dispatch(setError(''));
       } else {
@@ -127,7 +125,6 @@ export const SearchForm = () => {
           name="departure"
           selected={departureDate} 
           onChange={(date: Date) => {
-            console.log(date.getTime());
             if (date > arrivalDate) {
               setArrivalDate(date);
             }
