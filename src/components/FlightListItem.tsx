@@ -32,8 +32,8 @@ const FlightListItem = ({ flight }: FlightListItemProps) => {
         <p><b>To: </b> {getAirportString(flight.to)}</p>
       </div>
       <div>
-        <p><b>Departure: </b> {format(flight.departure, "dd-MM-yyyy HH:mm")}</p>
-        <p><b>Arrival: </b> {format(flight.arrival, "dd-MM-yyyy HH:mm")}</p>
+        <p><b>Departure: </b> {format(flight.departure, "dd/MM/yyyy HH:mm")}</p>
+        <p><b>Arrival: </b> {format(flight.arrival, "dd/MM/yyyy HH:mm")}</p>
         <p><b>Flight Time: </b> {getFlightTime(flight.flightTime)}</p>
       </div>
       <div>

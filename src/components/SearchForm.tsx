@@ -120,6 +120,7 @@ export const SearchForm = () => {
     }}>
       <div className='custom-datepicker'>
         <DatePicker 
+          dateFormat="dd/MM/yyyy"
           minDate={new Date()}
           name="departure"
           selected={departureDate} 
@@ -135,6 +136,7 @@ export const SearchForm = () => {
       { isReturn && (
         <div className='custom-datepicker'>
           <DatePicker 
+            dateFormat="dd/MM/yyyy"
             minDate={departureDate}
             name="arrival"
             selected={arrivalDate} 
