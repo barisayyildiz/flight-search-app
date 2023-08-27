@@ -10,8 +10,8 @@ export type FlightState = {
 
 const initialState: FlightState = {
   flights: {
-    from: [],
-    to: []
+    outbound: [],
+    return: []
   },
   loading: false,
   error: ''

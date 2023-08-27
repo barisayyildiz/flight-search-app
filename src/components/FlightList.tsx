@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { selectFligts } from '@/store/flights';
 import { selectSearch } from '@/store/search'
 import { useSelector } from 'react-redux';
@@ -10,7 +10,7 @@ const FlightList = () => {
   const { flights, loading, error } = useSelector(selectFligts);
   const { submitted } = useSelector(selectSearch);
 
-  const [tab, setTab] = useState<'outbound' | 'return'>(flights.outbound ? 'outbound' : 'return')
+  const [tab, setTab] = useState<'outbound' | 'return'>('outbound')
   const [key, setKey] = useState<keyof FlightListResponseTypeItem | null>(null);
 
   const ErrorField = () => (
@@ -31,11 +31,18 @@ const FlightList = () => {
   }, [flights, tab]);
 
   const sortedData = useMemo(() => {
+    console.log(tab, flights.outbound)
     const data = [...(tab === 'outbound' ? flights.outbound : flights.return ? flights.return : [])];
     if(!key) return data;
     console.log(key);
     return data.sort((a, b) => (a[key] as number) - (b[key] as number));
   }, [flights, key, tab]);
+
+  useEffect(() => {
+    if(!flights.return && tab === 'return') {
+      setTab('outbound')
+    }
+  }, [flights])
  
   if(!submitted) {
     return null;
