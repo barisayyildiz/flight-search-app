@@ -99,12 +99,14 @@ export const SearchForm = () => {
           setFromWhere(value);
         }} 
         options={airports}
+        searchable={true}
       ></Dropdown>
       <Dropdown 
         name={"to"} 
         value={toWhere} 
         onSelected={value => setToWhere(value)} 
         options={airports.filter(airport => airport.value !== fromWhere)}
+        searchable={true}
       ></Dropdown>
     </div>
   )
